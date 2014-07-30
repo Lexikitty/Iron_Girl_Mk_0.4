@@ -31,8 +31,8 @@ PImage RTLit;
 PImage FlightLit; 
 
 //Repulsor power variables
-int RepRPower = 100; //Add real data
-int RepLPower = 100; //Add real data
+int RepRPower = 0; //Add real data
+int RepLPower = 0; //Add real data
 
 //Graph mapping variables
 float RepRMap; 
@@ -40,26 +40,32 @@ float RepLMap;
 float HelmMap; 
 float BodyMap; 
 
+//10-DOF variables
 float roll  = 0.0F;
 float pitch = 0.0F;
 float yaw   = 0.0F;
 float temp  = 0.0F;
 float alt   = 0.0F;
 
-OBJModel model;
+//OBJModel model; //no longer used
 Serial   port;
 String   buffer = "";
 
 //Variable for camera info
 String CameraSettings; 
 
+//Timers
+int lastMillis1 = 0;
+int lastMillis2 = 0;
+int lastMillis3 = 0;
+int lastMillis4 = 0;
+
+
+
 void setup()
 {
   size(1280, 720, P3D);
   frameRate(60);
-  model = new OBJModel(this);
-  model.load("HUD_Test3_mesh.obj");
-  model.scale(50);
   font = loadFont("ISL_Andvari-Regular-20.vlw"); 
   textFont(font); 
   smooth(); 
@@ -93,7 +99,7 @@ void setup()
   HUDHorizon = loadImage("HUDHorizon_Blue.png");
   HUDCrosshair = loadImage("HUDCrosshair_Blue.png"); 
   AttackLit = loadImage("AttackLit.png"); 
-      
+  RepRPower = 0;     
 }
  
 void draw()
@@ -223,6 +229,20 @@ void draw()
   text("EXTMP: N/A", 10, 34); //Add data  
   
   text("REP-R: " + RepRPower, 10, 55); //Add data
+  //Repulsor Warm-Up Animation (Test)
+  int delay1 = 20; 
+  if(lastMillis1==0 || millis() > (lastMillis1+delay1))
+  {
+    if(RepRPower <100){
+      RepRPower++; 
+      lastMillis1= millis();
+    }
+    else{
+      //RepRPower = 0; //Loop animation
+      lastMillis1 = millis(); 
+    }
+  }    
+      
   RepRMap = map(RepRPower, 0, 100, 90, 300); 
   if(RepRPower>30 && RepRPower<65){
     stroke(255,255,0); 
@@ -236,6 +256,19 @@ void draw()
   stroke(0,174,231);//Reset stroke
   
   text("REP-L: " + RepLPower, 10, 65); //Add data
+  int delay2 = 40; 
+  if(lastMillis2==0 || millis() > (lastMillis2+delay2))
+  {
+    if(RepLPower <100){
+      RepLPower++; 
+      lastMillis2= millis();
+    }
+    else{
+      //RepLPower = 0; //Loop animation
+      lastMillis2 = millis(); 
+    }
+  } 
+  
   RepLMap = map(RepLPower, 0, 100, 90, 300); 
   if(RepLPower>30 && RepLPower<65){
     stroke(255,255,0); 
