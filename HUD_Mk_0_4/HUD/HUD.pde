@@ -5,13 +5,20 @@ import processing.opengl.*;
 //import saito.objloader.*;
 import processing.video.*;
 
-/*Color reference
+/*Color references - just made it easier for me to verify I was using the same colors - should be a variable at some point. 
 stroke(0,174,231); - Light blue
 stroke(255,255,0); - Yellow
 */
 
-//Variable to select which USB camera/mode to use
+//USER OPTTIONS:
+
+//Variable to select which USB camera/mode to use. 
 int CameraSelection = 17; 
+
+//Use this variable to select your COM port from the index.
+int ComSelection = 0;  
+
+//BEGIN CODE
 
 //Images to be loaded
 PFont font; 
@@ -21,7 +28,11 @@ PImage HUDHorizon;
 PImage HUDCrosshair; 
 PImage HelmetHeading; 
 PImage BodyHeading;
+
+//Camera variables
 Capture cam;
+int NoCam = 0; //Allows the HUD to run without a camera present
+PImage VFU; 
 
 //Mode images 
 /*Not currently used.
@@ -50,6 +61,8 @@ float temp  = 0.0F;
 float alt   = 0.0F;
 
 //OBJModel model; //no longer used
+
+//Serial stream setup
 Serial   port;
 String   buffer = "";
 
@@ -72,16 +85,19 @@ void setup()
   textFont(font); 
   smooth(); 
   // ToDo: Check for errors, this will fail with no serial device present
-  String ttyPort = Serial.list()[1];
+  print("Serial ports available: ");
+  println(Serial.list()); 
+  String ttyPort = Serial.list()[ComSelection];
   port = new Serial(this, ttyPort, 115200);
   port.bufferUntil('\n');
   
   //Check for cameras
   String[] cameras = Capture.list();
   
+  VFU = loadImage("Video_Feed_Unavailable.png");
   if (cameras.length == 0) {
     println("There are no cameras available for capture.");
-    exit();
+    NoCam = 1;      
   } else {
     println("Available cameras:");
     for (int i = 0; i < cameras.length; i++) {
@@ -100,19 +116,23 @@ void setup()
   HUDOutline = loadImage("HUD-G-BluePNG.png"); 
   HUDHorizon = loadImage("HUDHorizon_Blue.png");
   HUDCrosshair = loadImage("HUDCrosshair_Blue.png"); 
-  AttackLit = loadImage("AttackLit.png"); 
+  //AttackLit = loadImage("AttackLit.png"); 
   RepRPower = 0;     
 }
  
 void draw()
 {
-  if (cam.available() == true) {
-    cam.read(); 
-  }
   lights();
-  background(0,0,0);
-  image(cam,0, 0, 1280, 720);
-  
+  background(0,0,0);  
+  if (NoCam == 0){
+    if (cam.available() == true) {
+    cam.read(); 
+    image(cam,0, 0, 1280, 720);
+    }
+  }
+  else{
+    image(VFU,0, 0, 1280, 720); 
+  }
   
  
   //Value inversion for hemlet POV
