@@ -23,12 +23,14 @@ PImage HelmetHeading;
 PImage BodyHeading;
 Capture cam;
 
-//Mode images
+//Mode images 
+/*Not currently used.
 PImage AttackLit; 
 PImage NavLit; 
 PImage CommLit; 
 PImage RTLit; 
 PImage FlightLit; 
+*/
 
 //Repulsor power variables
 int RepRPower = 0; //Add real data
@@ -325,9 +327,7 @@ void draw()
   stroke(255); 
   popMatrix(); 
   
-  
-  
-  /* 3D Horizon
+  /* 3D Horizon (no longer used, but may come in handy later)
   // Set a new co-ordinate space
   pushMatrix();
 
